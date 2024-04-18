@@ -63,6 +63,7 @@ jobs:
       
     - name: Install Python dependencies
       run: |
+        cd migarted_python_sas-access-samples-master
         pip install -r requirement.txt
         python *.py
    
