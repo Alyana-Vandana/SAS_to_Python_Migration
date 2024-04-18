@@ -1,8 +1,8 @@
 name: Install Python Dependencies from Code
 on:
   push:
-      paths:
-        - main
+    branches:
+      - main
 jobs:
   install-dependencies:
     runs-on: ubuntu-latest
