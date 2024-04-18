@@ -2,7 +2,7 @@ name: Install Python Dependencies from Code
 on:
   push:
       paths:
-        - 'migarted_python_sas-access-samples-master/**'
+        - main
 jobs:
   install-dependencies:
     runs-on: ubuntu-latest
