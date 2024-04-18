@@ -39,9 +39,9 @@ jobs:
           echo "File Name: $script_file"
           echo "Code:"
           cat "$script_file"
-          cat script_file > tested.py
-          echo "after storing"
-          cat tested.py
+          # cat script_file > tested.py
+          # echo "after storing"
+          # cat tested.py
           echo "---"
           done
 
