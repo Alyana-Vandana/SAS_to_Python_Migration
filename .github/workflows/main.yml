@@ -64,7 +64,10 @@ jobs:
     - name: Install Python dependencies
       run: |
         cd migarted_python_sas-access-samples-master
+
         pip install --upgrade pip
+        apt-get update && apt-get install -y libhdf5-dev
+        pip install tables
         pip install -r requirement.txt
         python *.py
    
