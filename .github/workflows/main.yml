@@ -32,6 +32,8 @@ jobs:
 
     - name: Print file names and codes
       run: |
+        cd migarted_python_sas-access-samples-master
+        pwd
         python_files="${{ steps.find-python-files.outputs.py_scripts }}"
         for script_file in $python_files; do
           echo "File Name: $script_file"
