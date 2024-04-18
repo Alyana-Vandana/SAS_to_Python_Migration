@@ -1,0 +1,62 @@
+name: Install Python Dependencies from Code
+
+on:
+  push:
+      paths:
+        - 'migrated_python-sas-access-samples-master/**'
+
+jobs:
+  install-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+        
+    # - name: Find Python files in directory
+    #   id: find-python-files
+    #   run: |
+    #     cd migarted_python_sas-access-samples-master
+    #     PY_SCRIPTS=$(find migarted_python_sas-access-samples-master -type f -name "*.py")
+    #     echo "::set-output name=py_scripts::$PY_SCRIPTS"
+
+    - name: Find Python files in directory
+      id: find-python-files
+      run: |
+       cd migarted_python_sas-access-samples-master
+       PY_SCRIPTS=$(find . -type f -name "*.py")
+       echo "::set-output name=py_scripts::$PY_SCRIPTS"
+
+    - name: Print file names and codes
+      run: |
+        python_files="${{ steps.find-python-files.outputs.py_scripts }}"
+        for script_file in $python_files; do
+          echo "File Name: $script_file"
+          echo "Code:"
+          cat "$script_file"
+          echo "---"
+          done
+
+    - name: Analyze Python code and generate requirements.txt
+      id: openai-analysis
+      env:
+        AZURE_OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }} 
+        AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }} 
+      run: |
+        python_files="${{ steps.find-python-files.outputs.py_scripts }}"
+        python_code=""
+        for script_file in $python_files; do
+          python_code+="$(<$script_file)\n"
+        done
+        openai_response=$(az openai language model complete --endpoint $AZURE_OPENAI_ENDPOINT --subscription-key $AZURE_OPENAI_KEY --prompt "Analyze the Python code and generate requirements.txt:\n\n$python_code" --temperature 0.5 --max-tokens 150 --output json)
+        requirements=$(echo "$openai_response" | jq -r '.completions[0].text')
+        echo "$requirements" > requirements.txt
+      
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
